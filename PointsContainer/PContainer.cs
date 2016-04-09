@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PointsContainer
 {
@@ -12,25 +8,25 @@ namespace PointsContainer
 	{
 		public readonly List<int> LocalGlobarOrderMapping = new List<int> {0, 8, 1, 11, 9, 3, 10, 2, 12, 13, 15, 14, 4, 16, 5, 19, 17, 7, 18, 6};
 		//Size
-		private double _totalHeight = 5;
-		private double _totalWidth = 5;
-		private double _totalDepth = 5;
+		private readonly double _totalHeight = 5;
+		private readonly double _totalWidth = 5;
+		private readonly double _totalDepth = 5;
 
 		//Number of elements per side
-		private readonly int _feNumberPerH = 3;
-		private readonly int _feNumberPerW = 2;
-		private readonly int _feNumberPerD = 2;
+		private readonly int _feNumberPerH = 10;
+		private readonly int _feNumberPerW = 10;
+		private readonly int _feNumberPerD = 10;
 
 		//Number of levels per side
-		private int _levelNumberPerH;
-		private int _levelNumberPerW;
-		private int _levelNumberPerD;
+		private readonly int _levelNumberPerH;
+		private readonly int _levelNumberPerW;
+		private readonly int _levelNumberPerD;
 
 		//Total number of points
 		private int _totalPointsNumber;
-		private List<GlobalPoint> _globalPoints = new List<GlobalPoint>();
-		private List<FiniteElement> _finiteElements = new List<FiniteElement>();
-		private Dictionary<int, List<int>> _globalPointsFe = new Dictionary<int, List<int>>();
+		private readonly List<GlobalPoint> _globalPoints = new List<GlobalPoint>();
+		private readonly List<FiniteElement> _finiteElements = new List<FiniteElement>();
+		private readonly Dictionary<int, List<int>> _globalPointsFe = new Dictionary<int, List<int>>();
 		private int[,] _localGlobalMapping;
 
 		public PContainer()

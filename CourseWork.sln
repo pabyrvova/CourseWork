@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CourseWork", "CourseWork\Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PointsContainer", "PointsContainer\PointsContainer.csproj", "{D733F529-FAB0-456C-941C-8126418B3EA2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FiniteElementsMethod", "FiniteElemtsMethod\FiniteElementsMethod.csproj", "{B0EA53AE-5418-48A3-95F6-7744305297FF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{D733F529-FAB0-456C-941C-8126418B3EA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D733F529-FAB0-456C-941C-8126418B3EA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D733F529-FAB0-456C-941C-8126418B3EA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0EA53AE-5418-48A3-95F6-7744305297FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0EA53AE-5418-48A3-95F6-7744305297FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0EA53AE-5418-48A3-95F6-7744305297FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0EA53AE-5418-48A3-95F6-7744305297FF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
