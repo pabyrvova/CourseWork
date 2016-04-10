@@ -126,14 +126,14 @@ namespace FiniteElemtsMethod
 					}
 				}
 			}
-			int counterRowsLevel = 20;
-			int counterColumnLevel = 20;
+			int rowsPerBlock = 20;
+			int columnsPerBlock = 20;
 			for (int i = 0; i < 3; i++)
 			{
 				for (int j = 0; j < 3; j++)
 				{
-					int coefI = i  * counterRowsLevel;
-					int coefJ = j * counterColumnLevel;
+					int coefI = i  * rowsPerBlock;
+					int coefJ = j * columnsPerBlock;
 					double[,] doubles = matrices[i, j].GetMge();
 					for (int k = 0; k < 20; k++)
 					{
