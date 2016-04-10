@@ -48,6 +48,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\FiniteElemtsMethod\FiniteElementsMethod.csproj">
+      <Project>{b0ea53ae-5418-48a3-95f6-7744305297ff}</Project>
+      <Name>FiniteElementsMethod</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PointsContainer\PointsContainer.csproj">
       <Project>{d733f529-fab0-456c-941c-8126418b3ea2}</Project>
       <Name>PointsContainer</Name>

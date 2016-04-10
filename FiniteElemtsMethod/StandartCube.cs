@@ -7,18 +7,23 @@ namespace FiniteElemtsMethod
 {
 	public class StandartCube
 	{
-		public static double[] C = { 5.0 / 9.0, 8.0 / 9.0, 5.0 / 9.0 };
-		public static double[] X = { -Math.Sqrt(0.6), 0, Math.Sqrt(0.6) };
+		public static double[] C = {5.0 / 9.0, 8.0 / 9.0, 5.0 / 9.0};
+		public static double[] X = {-Math.Sqrt(0.6), 0, Math.Sqrt(0.6)};
 		private readonly List<GlobalPoint> _globalPoints = new List<GlobalPoint>();
 		private readonly List<Point> _localPoints = new List<Point>();
 		private FiniteElement _element;
 		private readonly double[,,] DXYZABG = new double[3, 3, 27]; //ex. x,alpha,Gaus
 		private readonly double[,,] DFIXYZ = new double[27, 20, 3]; //ex. Gaus,Fi,X
 		private readonly double[] DJ = new double[27];
+		private readonly double[,] MGE = new double[60,60];
 
-		public StandartCube()
+		public void Init()
 		{
 			InitLocalPoints();
+			InitDXYZABG();
+			InitJacobi();
+			InitDFIXYZ();
+			InitMGE();
 		}
 
 		public void InitDXYZABG()
@@ -53,7 +58,7 @@ namespace FiniteElemtsMethod
 		{
 			for (int l = 0; l < 27; l++)
 			{
-				DJ[0] = DXYZABG[0, 0, l] * DXYZABG[1, 1, l] * DXYZABG[2, 2, l] + DXYZABG[0, 1, l] * DXYZABG[1, 2, l] * DXYZABG[2, 0, l] + DXYZABG[0, 2, l] * DXYZABG[1, 0, l] * DXYZABG[2, 1, l] -
+				DJ[l] = DXYZABG[0, 0, l] * DXYZABG[1, 1, l] * DXYZABG[2, 2, l] + DXYZABG[0, 1, l] * DXYZABG[1, 2, l] * DXYZABG[2, 0, l] + DXYZABG[0, 2, l] * DXYZABG[1, 0, l] * DXYZABG[2, 1, l] -
 						DXYZABG[0, 2, l] * DXYZABG[1, 1, l] * DXYZABG[2, 0, l] - DXYZABG[0, 0, l] * DXYZABG[1, 2, l] * DXYZABG[2, 1, l] - DXYZABG[0, 1, l] * DXYZABG[1, 0, l] * DXYZABG[2, 2, l];
 			}
 		}
@@ -82,7 +87,7 @@ namespace FiniteElemtsMethod
 							{
 								rightSide[abg] = FiDerivate(X[i], X[j], X[k], i1, abg);
 							}
-							double[] solve = matrix.Solve(rightSide);
+							double[] solve = matrix.Solve(rightSide,true);
 							for (int l = 0; l < solve.Length; l++)
 							{
 								DFIXYZ[counter, i1, l] = solve[l];
@@ -96,6 +101,39 @@ namespace FiniteElemtsMethod
 
 		private void InitMGE()
 		{
+			List<IAMatrix> list = new List<IAMatrix>
+			{new Aii(DFIXYZ, DJ, 0, 1, 2), new Aij(DFIXYZ, DJ, 0, 1), new Aij(DFIXYZ, DJ, 0, 2), new Aii(DFIXYZ, DJ, 1, 0, 2), new Aij(DFIXYZ, DJ, 1, 2), new Aii(DFIXYZ, DJ, 2, 0, 1)};
+			IAMatrix[,] matrices = new IAMatrix[3,3];
+			int counter = 0;
+			for (int i = 0; i < 3; i++)
+			{
+				for (int j = 0; j < 3; j++)
+				{
+					if (j < i)
+						matrices[i, j] = matrices[j, i];
+					else
+					{
+						matrices[i, j] = list[counter];
+						counter++;
+					}
+				}
+			}
+			for (int i = 0; i < 3; i++)
+			{
+				for (int j = 0; j < 3; j++)
+				{
+					int coefI = i+1;
+					int coefJ = j+1;
+					double[,] doubles = matrices[i,j].GetMge();
+					for (int k = 0; k < 20; k++)
+					{
+						for (int l = 0; l < 20; l++)
+						{
+							MGE[k * coefI, l * coefJ] = doubles[k, l];
+						}
+					}
+				}
+			}
 		}
 
 		private void InitLocalPoints()
@@ -285,22 +323,6 @@ namespace FiniteElemtsMethod
 			for (int l = 0; l < n; l++)
 			{
 				sum += func(l);
-			}
-			return sum;
-		}
-
-		public static double TripleIntegral(Func<double, double, double, double> func)
-		{
-			double sum = 0;
-			for (int i = 0; i < 3; i++)
-			{
-				for (int j = 0; j < 3; j++)
-				{
-					for (int k = 0; k < 3; k++)
-					{
-
-					}
-				}
 			}
 			return sum;
 		}

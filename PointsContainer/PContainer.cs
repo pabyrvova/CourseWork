@@ -39,6 +39,22 @@ namespace PointsContainer
 			InitGlobalPointsContainer();
 			InitLocalGlobalMapping();
 		}
+			
+		public int[,] LocalGlobalMapping
+		{
+			get { return _localGlobalMapping; }
+			set { _localGlobalMapping = value; }
+		}
+
+		public List<FiniteElement> FiniteElements
+		{
+			get { return _finiteElements; }
+		}
+
+		public List<GlobalPoint> GlobalPoints
+		{
+			get { return _globalPoints; }
+		}
 
 		private void InitLocalGlobalMapping()
 		{

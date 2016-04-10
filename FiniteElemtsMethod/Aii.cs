@@ -1,12 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace FiniteElemtsMethod
 {
-	public class A11
+	public interface IAMatrix
+	{
+		double[,] GetMge();
+	}
+
+	public class Aii:IAMatrix
 	{
 		private readonly double[, ,] DFIXYZ = new double[27, 20, 3]; //ex. Gaus,Fi,X
 		private readonly double[,] feMge = new double[20,20];
@@ -15,14 +21,14 @@ namespace FiniteElemtsMethod
 		private double nyu = 100;
 		private double miy = 100;
 
-		public A11(double[, ,] dfixyz, double[] dj)
+		public Aii(double[, ,] dfixyz, double[] dj, int i, int j, int k)
 		{
 			DFIXYZ = dfixyz;
 			DJ = dj;
-			InitMge();
+			InitMge(i,j,k);
 		}
 
-		private void InitMge()
+		private void InitMge(int first, int second, int third)
 		{
 			for (int i = 0; i < 20; i++)
 			{
@@ -39,7 +45,7 @@ namespace FiniteElemtsMethod
 							for (int m = 0; m < 3; m++)
 							{
 								double C3 = StandartCube.C[m];
-								double d = lyambda * (1 - nyu) * DFIXYZ[counter, i, 0] * DFIXYZ[counter, j, 0] + miy * DFIXYZ[counter, i, 1] * DFIXYZ[counter, j, 1] + miy * DFIXYZ[counter, i, 2] * DFIXYZ[counter, j, 2];
+								double d = lyambda * (1 - nyu) * DFIXYZ[counter, i, first] * DFIXYZ[counter, j, first] + miy * DFIXYZ[counter, i, second] * DFIXYZ[counter, j, second] + miy * DFIXYZ[counter, i, third] * DFIXYZ[counter, j, third];
 								sumGlob += C3 * d * DJ[counter];
 								counter++;
 							}
@@ -50,6 +56,11 @@ namespace FiniteElemtsMethod
 					feMge[i, j] = sumGlobal;
 				}
 			}
+		}
+
+		public double[,] GetMge()
+		{
+			return feMge;
 		}
 	}
 }

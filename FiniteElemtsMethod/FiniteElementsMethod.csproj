@@ -56,7 +56,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="A11.cs" />
+    <Compile Include="Aii.cs" />
+    <Compile Include="Aij.cs" />
     <Compile Include="FiniteElement.cs" />
     <Compile Include="FiniteElementsMethod.cs" />
     <Compile Include="GlobalPoint.cs" />
