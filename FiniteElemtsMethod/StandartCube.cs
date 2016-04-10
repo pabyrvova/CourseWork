@@ -15,7 +15,7 @@ namespace FiniteElemtsMethod
 		private readonly double[,,] DXYZABG = new double[3, 3, 27]; //ex. x,alpha,Gaus
 		private readonly double[,,] DFIXYZ = new double[27, 20, 3]; //ex. Gaus,Fi,X
 		private readonly double[] DJ = new double[27];
-		private readonly double[,] MGE = new double[60,60];
+		private readonly double[,] MGE = new double[60, 60];
 
 		public void Init()
 		{
@@ -28,27 +28,33 @@ namespace FiniteElemtsMethod
 
 		public void InitDXYZABG()
 		{
-			int counter = 0;
 			for (int i = 0; i < 3; i++)
 			{
 				for (int j = 0; j < 3; j++)
 				{
+					int counter = 0;
 					for (int k = 0; k < 3; k++)
 					{
-						DXYZABG[i, j, counter] = Sum(index =>
+						for (int l = 0; l < 3; l++)
 						{
-							if (i == 0)
+							for (int m = 0; m < 3; m++)
 							{
-								return _globalPoints[index].Point.X * FiDerivate(X[i], X[j], X[k], index, j);
+								DXYZABG[i, j, counter] = Sum(index =>
+								{
+									if (i == 0)
+									{
+										return _globalPoints[index].Point.X * FiDerivate(X[k], X[l], X[m], index, j);
+									}
+									if (i == 1)
+									{
+										return _globalPoints[index].Point.Y * FiDerivate(X[k], X[l], X[m], index, j);
+									}
+									return _globalPoints[index].Point.Z * FiDerivate(X[k], X[l], X[m], index, j);
+								},
+									20);
+								counter++;
 							}
-							if (i == 1)
-							{
-								return _globalPoints[index].Point.Y * FiDerivate(X[i], X[j], X[k], index, j);
-							}
-							return _globalPoints[index].Point.Z * FiDerivate(X[i], X[j], X[k], index, j);
-						},
-							20);
-						counter++;
+						}
 					}
 				}
 			}
@@ -87,7 +93,7 @@ namespace FiniteElemtsMethod
 							{
 								rightSide[abg] = FiDerivate(X[i], X[j], X[k], i1, abg);
 							}
-							double[] solve = matrix.Solve(rightSide,true);
+							double[] solve = matrix.Solve(rightSide, true);
 							for (int l = 0; l < solve.Length; l++)
 							{
 								DFIXYZ[counter, i1, l] = solve[l];
@@ -103,14 +109,16 @@ namespace FiniteElemtsMethod
 		{
 			List<IAMatrix> list = new List<IAMatrix>
 			{new Aii(DFIXYZ, DJ, 0, 1, 2), new Aij(DFIXYZ, DJ, 0, 1), new Aij(DFIXYZ, DJ, 0, 2), new Aii(DFIXYZ, DJ, 1, 0, 2), new Aij(DFIXYZ, DJ, 1, 2), new Aii(DFIXYZ, DJ, 2, 0, 1)};
-			IAMatrix[,] matrices = new IAMatrix[3,3];
+			IAMatrix[,] matrices = new IAMatrix[3, 3];
 			int counter = 0;
 			for (int i = 0; i < 3; i++)
 			{
 				for (int j = 0; j < 3; j++)
 				{
 					if (j < i)
+					{
 						matrices[i, j] = matrices[j, i];
+					}
 					else
 					{
 						matrices[i, j] = list[counter];
@@ -118,18 +126,20 @@ namespace FiniteElemtsMethod
 					}
 				}
 			}
+			int counterRowsLevel = 20;
+			int counterColumnLevel = 20;
 			for (int i = 0; i < 3; i++)
 			{
 				for (int j = 0; j < 3; j++)
 				{
-					int coefI = i+1;
-					int coefJ = j+1;
-					double[,] doubles = matrices[i,j].GetMge();
+					int coefI = i  * counterRowsLevel;
+					int coefJ = j * counterColumnLevel;
+					double[,] doubles = matrices[i, j].GetMge();
 					for (int k = 0; k < 20; k++)
 					{
 						for (int l = 0; l < 20; l++)
 						{
-							MGE[k * coefI, l * coefJ] = doubles[k, l];
+							MGE[coefI + k, coefJ + l] = doubles[k, l];
 						}
 					}
 				}

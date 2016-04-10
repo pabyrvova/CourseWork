@@ -39,7 +39,11 @@ namespace PointsContainer
 			InitGlobalPointsContainer();
 			InitLocalGlobalMapping();
 		}
-			
+
+		public int NumberOfLastFEUnderPresure {
+			get { return _feNumberPerH * _feNumberPerW; }
+		}
+
 		public int[,] LocalGlobalMapping
 		{
 			get { return _localGlobalMapping; }

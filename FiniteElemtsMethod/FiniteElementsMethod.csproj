@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="Aii.cs" />
     <Compile Include="Aij.cs" />
+    <Compile Include="Fi.cs" />
     <Compile Include="FiniteElement.cs" />
     <Compile Include="FiniteElementsMethod.cs" />
     <Compile Include="GlobalPoint.cs" />
