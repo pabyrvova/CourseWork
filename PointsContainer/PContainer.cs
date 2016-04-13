@@ -8,14 +8,14 @@ namespace PointsContainer
 	{
 		public readonly List<int> LocalGlobarOrderMapping = new List<int> {0, 8, 1, 11, 9, 3, 10, 2, 12, 13, 15, 14, 4, 16, 5, 19, 17, 7, 18, 6};
 		//Size
-		private readonly double _totalHeight = 5;
-		private readonly double _totalWidth = 5;
-		private readonly double _totalDepth = 5;
+		private readonly double _totalHeight = 10;
+		private readonly double _totalWidth = 10;
+		private readonly double _totalDepth = 10;
 
 		//Number of elements per side
-		private readonly int _feNumberPerH = 10;
-		private readonly int _feNumberPerW = 10;
-		private readonly int _feNumberPerD = 10;
+		private readonly int _feNumberPerH = 2;
+		private readonly int _feNumberPerW = 2;
+		private readonly int _feNumberPerD = 2;
 
 		//Number of levels per side
 		private readonly int _levelNumberPerH;
@@ -42,6 +42,21 @@ namespace PointsContainer
 
 		public int NumberOfLastFEUnderPresure {
 			get { return _feNumberPerH * _feNumberPerW; }
+		}
+
+		public int FeNumberPerH
+		{
+			get { return _feNumberPerH; }
+		}
+
+		public int FeNumberPerW
+		{
+			get { return _feNumberPerW; }
+		}
+
+		public int FeNumberPerD
+		{
+			get { return _feNumberPerD; }
 		}
 
 		public int[,] LocalGlobalMapping
@@ -251,6 +266,12 @@ namespace PointsContainer
 			{
 				_totalPointsNumber += GetPointsNumberPerLevel(l % 2 == 0);
 			}
+		}
+
+		public int TotalPointsNumber
+		{
+			get { return _totalPointsNumber; }
+			set { _totalPointsNumber = value; }
 		}
 
 		private int GetPointsNumberPerLevel(bool isEven)

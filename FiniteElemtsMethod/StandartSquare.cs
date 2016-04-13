@@ -12,7 +12,7 @@ namespace FiniteElemtsMethod
 		private readonly double[,,] DXYZET = new double[3, 2, 9]; //ex. x,eta,Gaus
 		public static double[] X = {-Math.Sqrt(0.6), 0, Math.Sqrt(0.6)};
 		public static double[] C = {5.0 / 9.0, 8.0 / 9.0, 5.0 / 9.0};
-		public readonly double[] FE = new double[60];
+		private readonly double[] FE = new double[60];
 		public readonly Dictionary<int, List<int>> Dictionary = new Dictionary<int, List<int>>();
 		public int presureSurfaceNumber = 5;
 		public bool isUnderPresure;
@@ -21,6 +21,11 @@ namespace FiniteElemtsMethod
 		{
 			get { return isUnderPresure; }
 			set { isUnderPresure = value; }
+		}
+
+		public double[] Fe
+		{
+			get { return FE; }
 		}
 
 		public void Init()

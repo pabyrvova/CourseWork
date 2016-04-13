@@ -5,9 +5,9 @@
 		private readonly double[,,] DFIXYZ = new double[27, 20, 3]; //ex. Gaus,Fi,X
 		private readonly double[,] feMge = new double[20, 20];
 		private readonly double[] DJ = new double[27];
-		private readonly double lyambda = 12;
-		private readonly double nyu = 100;
-		private readonly double miy = 100;
+		private double lyambda = 0.676;
+		private double nyu = 0.48;
+		private double miy = 0.014;
 
 		public Aij(double[,,] dfixyz, double[] dj, int i, int j)
 		{

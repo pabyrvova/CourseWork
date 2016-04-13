@@ -26,6 +26,11 @@ namespace FiniteElemtsMethod
 			InitMGE();
 		}
 
+		public double[,] Mge
+		{
+			get { return MGE; }
+		}
+
 		public void InitDXYZABG()
 		{
 			for (int i = 0; i < 3; i++)
@@ -64,8 +69,8 @@ namespace FiniteElemtsMethod
 		{
 			for (int l = 0; l < 27; l++)
 			{
-				DJ[l] = DXYZABG[0, 0, l] * DXYZABG[1, 1, l] * DXYZABG[2, 2, l] + DXYZABG[0, 1, l] * DXYZABG[1, 2, l] * DXYZABG[2, 0, l] + DXYZABG[0, 2, l] * DXYZABG[1, 0, l] * DXYZABG[2, 1, l] -
-						DXYZABG[0, 2, l] * DXYZABG[1, 1, l] * DXYZABG[2, 0, l] - DXYZABG[0, 0, l] * DXYZABG[1, 2, l] * DXYZABG[2, 1, l] - DXYZABG[0, 1, l] * DXYZABG[1, 0, l] * DXYZABG[2, 2, l];
+				DJ[l] = Math.Abs(DXYZABG[0, 0, l] * DXYZABG[1, 1, l] * DXYZABG[2, 2, l] + DXYZABG[0, 1, l] * DXYZABG[1, 2, l] * DXYZABG[2, 0, l] + DXYZABG[0, 2, l] * DXYZABG[1, 0, l] * DXYZABG[2, 1, l] -
+						DXYZABG[0, 2, l] * DXYZABG[1, 1, l] * DXYZABG[2, 0, l] - DXYZABG[0, 0, l] * DXYZABG[1, 2, l] * DXYZABG[2, 1, l] - DXYZABG[0, 1, l] * DXYZABG[1, 0, l] * DXYZABG[2, 2, l]);
 			}
 		}
 
