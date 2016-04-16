@@ -6,7 +6,7 @@ namespace PointsContainer
 {
 	public class PContainer
 	{
-		public readonly List<int> LocalGlobarOrderMapping = new List<int> {0, 8, 1, 11, 9, 3, 10, 2, 12, 13, 15, 14, 4, 16, 5, 19, 17, 7, 18, 6};
+		public readonly List<int> LocalGlobalOrderMapping = new List<int> {0, 8, 1, 11, 9, 3, 10, 2, 12, 13, 15, 14, 4, 16, 5, 19, 17, 7, 18, 6};
 		//Size
 		private readonly double _totalHeight = 10;
 		private readonly double _totalWidth = 10;
@@ -38,6 +38,21 @@ namespace PointsContainer
 			InitFiniteElements();
 			InitGlobalPointsContainer();
 			InitLocalGlobalMapping();
+		}
+
+		public double TotalHeight
+		{
+			get { return _totalHeight; }
+		}
+
+		public double TotalWidth
+		{
+			get { return _totalWidth; }
+		}
+
+		public double TotalDepth
+		{
+			get { return _totalDepth; }
 		}
 
 		public int NumberOfLastFEUnderPresure {
@@ -83,7 +98,7 @@ namespace PointsContainer
 				List<int> feAllGlobalPoints = GetFeAllGlobalPoints(lF);
 				for (int l = 0; l < feAllGlobalPoints.Count; l++)
 				{
-					int indexOf = LocalGlobarOrderMapping.IndexOf(l);
+					int indexOf = LocalGlobalOrderMapping.IndexOf(l);
 					if (indexOf == -1)
 					{
 						throw new Exception();
