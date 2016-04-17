@@ -7,7 +7,7 @@ namespace FiniteElemtsMethod
 		private readonly double[,,] DXYZET = new double[3, 2, 9]; //ex. x,eta,gaus
 		private readonly double[] fe = new double[8];
 		private readonly Func<double, double, int, double> Fii;
-		public double Pn = 0.04;
+		public double Pn = 0.004;
 		private double lyambda = 0.676;
 		private double nyu = 0.48;
 		private double miy = 0.014;

@@ -29,6 +29,7 @@
 		private void InitializeComponent()
 		{
 			this.openGLControl = new SharpGL.OpenGLControl();
+			this._btnCalculate = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.openGLControl)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -48,11 +49,22 @@
 			this.openGLControl.Resized += new System.EventHandler(this.openGLControl_Resized);
 			this.openGLControl.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.OpenGlControlKeyPress);
 			// 
+			// _btnCalculate
+			// 
+			this._btnCalculate.Location = new System.Drawing.Point(548, 0);
+			this._btnCalculate.Name = "_btnCalculate";
+			this._btnCalculate.Size = new System.Drawing.Size(75, 23);
+			this._btnCalculate.TabIndex = 1;
+			this._btnCalculate.Text = "Calculate";
+			this._btnCalculate.UseVisualStyleBackColor = true;
+			this._btnCalculate.Click += new System.EventHandler(this.BtnCalculateClick);
+			// 
 			// SharpGLForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(624, 391);
+			this.Controls.Add(this._btnCalculate);
 			this.Controls.Add(this.openGLControl);
 			this.Name = "SharpGLForm";
 			this.Text = "SharpGL Form";
@@ -65,6 +77,7 @@
 		#endregion
 
 		private SharpGL.OpenGLControl openGLControl;
+		private System.Windows.Forms.Button _btnCalculate;
 	}
 }
 

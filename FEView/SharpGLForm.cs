@@ -19,9 +19,11 @@ namespace FEView
 		private readonly List<int> _localPointNumberingVertical = new List<int>() {0, 12, 4, 1, 13, 5, 2, 14, 6, 3, 15, 7};
 		private PContainer _container;
 		private double _coef;
-
+		private double[] _result;
 		/// <summary>
 		private float _rotation = 0;
+
+		private bool _lock = false;
 
 		/// Initializes a new instance of the
 		/// <see cref="SharpGLForm" />
@@ -39,6 +41,8 @@ namespace FEView
 		/// <param name="e">The <see cref="RenderEventArgs" /> instance containing the event data.</param>
 		private void openGLControl_OpenGLDraw(object sender, RenderEventArgs e)
 		{
+			if (_lock)
+				return;
 			//  Get the OpenGL object.
 			OpenGL gl = openGLControl.OpenGL;
 
@@ -181,13 +185,6 @@ namespace FEView
 			int npq = _container.TotalPointsNumber;
 			List<int> fixedLocalPointNumber = new List<int> {0, 8, 1, 9, 2, 10, 3, 11};
 			double[,] mg = new double[3 * npq, 3 * npq];
-			for (int i = 0; i < mg.GetLength(0); i++)
-			{
-				for (int j = 0; j < mg.GetLength(1); j++)
-				{
-					mg[i, j] = -100000;
-				}
-			}
 			double[] f = new double[3 * npq];
 			for (int i = 0; i < localGlobalMapping.GetLength(0); i++)
 			{
@@ -223,7 +220,7 @@ namespace FEView
 				lStreamWriter.WriteLine(builder.ToString());
 			}
 			double determinant = mg.Determinant();
-			double[] result = mg.Solve(f, false);
+			_result = mg.Solve(f);
 		}
 
 		private enum EMove
@@ -330,6 +327,20 @@ namespace FEView
 				gl.Vertex(nextPoint.Point.X * _coef, nextPoint.Point.Y * _coef, nextPoint.Point.Z * _coef);
 				gl.End();
 			}
+		}
+
+		private void BtnCalculateClick(object sender, EventArgs e)
+		{
+			Calculate();
+			_lock = true;
+			for (int l = 0; l < _container.GlobalPoints.Count; l++)
+			{
+				int startnumber = l * 3;
+				_container.GlobalPoints[l].Point.X += _result[startnumber];
+				_container.GlobalPoints[l].Point.Y += _result[startnumber+1];
+				_container.GlobalPoints[l].Point.Z += _result[startnumber+2];
+			}
+			_lock = false;
 		}
 	}
 }
