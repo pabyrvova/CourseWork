@@ -17,9 +17,9 @@ namespace FiniteElemtsMethod
 		private readonly double[, ,] DFIXYZ = new double[27, 20, 3]; //ex. Gaus,Fi,X
 		private readonly double[,] feMge = new double[20,20];
 		private readonly double[] DJ = new double[27];
-		private double lyambda = 0.676;
-		private double nyu = 0.48;
-		private double miy = 0.014;
+		private double lyambda = 5.55037e+10;
+		private double nyu = 0.34;
+		private double miy = 2.61194e+10;
 
 		public Aii(double[, ,] dfixyz, double[] dj, int i, int j, int k)
 		{

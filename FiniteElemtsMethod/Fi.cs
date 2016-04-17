@@ -7,10 +7,10 @@ namespace FiniteElemtsMethod
 		private readonly double[,,] DXYZET = new double[3, 2, 9]; //ex. x,eta,gaus
 		private readonly double[] fe = new double[8];
 		private readonly Func<double, double, int, double> Fii;
-		public double Pn = 0.004;
-		private double lyambda = 0.676;
-		private double nyu = 0.48;
-		private double miy = 0.014;
+		public double Pn = -7e+9;
+		private double lyambda = 5.55037e+10;
+		private double nyu = 0.34;
+		private double miy = 2.61194e+10;
 
 		public Fi(double[,,] dxyzet, Func<double, double, int, double> fi, int first, int second, bool isUnderPresure)
 		{
