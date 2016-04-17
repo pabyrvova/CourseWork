@@ -165,7 +165,6 @@ namespace FEView
 			{
 				double[,] mge = lCubes[i].Mge;
 				double[] fe = lSquares[i].Fe;
-				int counter = 0;
 				for (int j = 0; j < mge.GetLength(0); j++)
 				{
 					int derivateByRow = j / 20;
@@ -176,7 +175,6 @@ namespace FEView
 						if (j == k && fixedLocalPointNumber.Contains(localPointNumberRow) && i < _container.NumberOfLastFEUnderPresure)
 						{
 							mge[j, k] = Math.Pow(10, 50);
-							counter++;
 						}
 						int derivateByColumn = k / 20;
 						int localPointNumberColumn = k % 20;
@@ -185,7 +183,6 @@ namespace FEView
 					}
 					f[globalNumberRow] += fe[j];
 				}
-				counter = 0;
 			}
 			StreamWriter lStreamWriter = new StreamWriter("E:\\Programming\\CourseWork\\trunk\\CourseWork\\bin\\Debug\\mg.txt");
 			for (int i = 0; i < mg.GetLength(0); i++)
