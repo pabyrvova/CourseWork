@@ -137,7 +137,7 @@ namespace FiniteElemtsMethod
 			{
 				for (int j = 0; j < 3; j++)
 				{
-					int coefI = i  * rowsPerBlock;
+					int coefI = i * rowsPerBlock;
 					int coefJ = j * columnsPerBlock;
 					double[,] doubles = matrices[i, j].GetMge();
 					for (int k = 0; k < 20; k++)

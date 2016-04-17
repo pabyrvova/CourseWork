@@ -48,7 +48,7 @@ namespace FiniteElemtsMethod
 
 		private void InitFe()
 		{
-			List<Fi> list = new List<Fi> { new Fi(DXYZET, Fi, 1, 2, isUnderPresure), new Fi(DXYZET, Fi, 2, 0, isUnderPresure), new Fi(DXYZET, Fi, 0, 1, isUnderPresure) };
+			List<Fi> list = new List<Fi> {new Fi(DXYZET, Fi, 1, 2, isUnderPresure), new Fi(DXYZET, Fi, 2, 0, isUnderPresure), new Fi(DXYZET, Fi, 0, 1, isUnderPresure)};
 			List<int> ints = Dictionary[presureSurfaceNumber];
 			int levelCounter = 20;
 			for (int i = 0; i < 3; i++)

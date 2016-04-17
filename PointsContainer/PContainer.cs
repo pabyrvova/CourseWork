@@ -9,7 +9,7 @@ namespace PointsContainer
 		public readonly List<int> LocalGlobalOrderMapping = new List<int> {0, 8, 1, 11, 9, 3, 10, 2, 12, 13, 15, 14, 4, 16, 5, 19, 17, 7, 18, 6};
 		//Size
 		private readonly double _totalHeight = 10;
-		private readonly double _totalWidth = 5;
+		private readonly double _totalWidth = 10;
 		private readonly double _totalDepth = 10;
 
 		//Number of elements per side

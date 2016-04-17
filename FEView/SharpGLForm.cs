@@ -20,6 +20,7 @@ namespace FEView
 		private PContainer _container;
 		private double _coef;
 		private double[] _result;
+
 		/// <summary>
 		private float _rotation = 0;
 
@@ -39,10 +40,12 @@ namespace FEView
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="RenderEventArgs" /> instance containing the event data.</param>
-		private void openGLControl_OpenGLDraw(object sender, RenderEventArgs e)
+		private void OpenGlControlOpenGlDraw(object sender, RenderEventArgs e)
 		{
 			if (_lock)
+			{
 				return;
+			}
 			//  Get the OpenGL object.
 			OpenGL gl = openGLControl.OpenGL;
 
@@ -53,53 +56,25 @@ namespace FEView
 			gl.LoadIdentity();
 
 			openGLControl.OpenGL.Rotate(_rotation, 0.0f, 1.0f, 0.0f);
+			gl.PointSize(8);
+			gl.Begin(OpenGL.GL_POINTS);
+			gl.Color(0.5,0.5,0.5);
+			gl.Vertex(0,0,0);
+			gl.End();
 			for (int i = 0; i < _container.FiniteElements.Count; i++)
 			{
-				DrawFe(i);
+				if (i < _container.NumberOfLastFEUnderPresure)
+				{
+					DrawFe(i, true);
+				}
+				else
+				{
+					DrawFe(i, false);
+				}
 			}
-
-
-			//  Rotate around the Y axis.
-			//gl.Rotate(rotation, 0.0f, 1.0f, 0.0f);
-
-			////  Draw a coloured pyramid.
-			//gl.Begin(OpenGL.GL_TRIANGLES);
-			//gl.Color(1.0f, 0.0f, 0.0f);
-			//gl.Vertex(0.0f, 1.0f, 0.0f);
-			//gl.Color(0.0f, 1.0f, 0.0f);
-			//gl.Vertex(-1.0f, -1.0f, 1.0f);
-			//gl.Color(0.0f, 0.0f, 1.0f);
-			//gl.Vertex(1.0f, -1.0f, 1.0f);
-			//gl.Color(1.0f, 0.0f, 0.0f);
-			//gl.Vertex(0.0f, 1.0f, 0.0f);
-			//gl.Color(0.0f, 0.0f, 1.0f);
-			//gl.Vertex(1.0f, -1.0f, 1.0f);
-			//gl.Color(0.0f, 1.0f, 0.0f);
-			//gl.Vertex(1.0f, -1.0f, -1.0f);
-			//gl.Color(1.0f, 0.0f, 0.0f);
-			//gl.Vertex(0.0f, 1.0f, 0.0f);
-			//gl.Color(0.0f, 1.0f, 0.0f);
-			//gl.Vertex(1.0f, -1.0f, -1.0f);
-			//gl.Color(0.0f, 0.0f, 1.0f);
-			//gl.Vertex(-1.0f, -1.0f, -1.0f);
-			//gl.Color(1.0f, 0.0f, 0.0f);
-			//gl.Vertex(0.0f, 1.0f, 0.0f);
-			//gl.Color(0.0f, 0.0f, 1.0f);
-			//gl.Vertex(-1.0f, -1.0f, -1.0f);
-			//gl.Color(0.0f, 1.0f, 0.0f);
-			//gl.Vertex(-1.0f, -1.0f, 1.0f);
-			//gl.End();
-
-			//  Nudge the rotation.
 		}
 
-
-		/// <summary>
-		///     Handles the OpenGLInitialized event of the openGLControl control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.EventArgs" /> instance containing the event data.</param>
-		private void openGLControl_OpenGLInitialized(object sender, EventArgs e)
+		private void OpenGlControlOpenGlInitialized(object sender, EventArgs e)
 		{
 			//  TODO: Initialise OpenGL here.
 
@@ -190,6 +165,7 @@ namespace FEView
 			{
 				double[,] mge = lCubes[i].Mge;
 				double[] fe = lSquares[i].Fe;
+				int counter = 0;
 				for (int j = 0; j < mge.GetLength(0); j++)
 				{
 					int derivateByRow = j / 20;
@@ -197,9 +173,10 @@ namespace FEView
 					int globalNumberRow = 3 * (localGlobalMapping[i, localPointNumberRow]) + derivateByRow;
 					for (int k = 0; k < mge.GetLength(1); k++)
 					{
-						if (j == k && fixedLocalPointNumber.Contains(localPointNumberRow) && i < 4)
+						if (j == k && fixedLocalPointNumber.Contains(localPointNumberRow) && i < _container.NumberOfLastFEUnderPresure)
 						{
 							mge[j, k] = Math.Pow(10, 50);
+							counter++;
 						}
 						int derivateByColumn = k / 20;
 						int localPointNumberColumn = k % 20;
@@ -208,6 +185,7 @@ namespace FEView
 					}
 					f[globalNumberRow] += fe[j];
 				}
+				counter = 0;
 			}
 			StreamWriter lStreamWriter = new StreamWriter("E:\\Programming\\CourseWork\\trunk\\CourseWork\\bin\\Debug\\mg.txt");
 			for (int i = 0; i < mg.GetLength(0); i++)
@@ -241,23 +219,9 @@ namespace FEView
 			_coef = 1 / max;
 		}
 
-		private void DrawFe(int feNumber)
+		private void DrawFe(int feNumber, bool isUnderPresure)
 		{
 			List<GlobalPoint> pointsToDraw = new List<GlobalPoint>();
-			for (int i = 0; i < 8; i++)
-			{
-				int globalPointNumber = _container.LocalGlobalMapping[feNumber, _localPointNumberingSquare[i]];
-				pointsToDraw.Add(_container.GlobalPoints[globalPointNumber]);
-			}
-			DrawSquare(pointsToDraw);
-			pointsToDraw.Clear();
-			for (int i = 8; i < 16; i++)
-			{
-				int globalPointNumber = _container.LocalGlobalMapping[feNumber, _localPointNumberingSquare[i]];
-				pointsToDraw.Add(_container.GlobalPoints[globalPointNumber]);
-			}
-			DrawSquare(pointsToDraw);
-			pointsToDraw.Clear();
 			int counter = 0;
 			for (int i = 0; i < _localPointNumberingVertical.Count; i++)
 			{
@@ -274,16 +238,30 @@ namespace FEView
 					counter++;
 				}
 			}
+			pointsToDraw.Clear();
+			for (int i = 0; i < 8; i++)
+			{
+				int globalPointNumber = _container.LocalGlobalMapping[feNumber, _localPointNumberingSquare[i]];
+				pointsToDraw.Add(_container.GlobalPoints[globalPointNumber]);
+			}
+			DrawSquare(pointsToDraw, isUnderPresure);
+			pointsToDraw.Clear();
+			for (int i = 8; i < 16; i++)
+			{
+				int globalPointNumber = _container.LocalGlobalMapping[feNumber, _localPointNumberingSquare[i]];
+				pointsToDraw.Add(_container.GlobalPoints[globalPointNumber]);
+			}
+			DrawSquare(pointsToDraw, false);
 		}
 
 		private void DrawVerticalLines(List<GlobalPoint> points)
 		{
 			OpenGL gl = openGLControl.OpenGL;
-			for (int i = 0; i < points.Count-1; i++)
+			for (int i = 0; i < points.Count - 1; i++)
 			{
 				GlobalPoint curPoint = points[i];
-				GlobalPoint nextPoint = points[i+1];
-				gl.PointSize(5);
+				GlobalPoint nextPoint = points[i + 1];
+				gl.PointSize(3);
 				gl.Begin(OpenGL.GL_POINTS);
 				gl.Color(0.0f, 1.0f, 0.0f);
 				gl.Vertex(curPoint.Point.X * _coef, curPoint.Point.Y * _coef, curPoint.Point.Z * _coef);
@@ -296,14 +274,14 @@ namespace FEView
 				gl.Vertex(nextPoint.Point.X * _coef, nextPoint.Point.Y * _coef, nextPoint.Point.Z * _coef);
 				gl.End();
 			}
-			gl.PointSize(5);
+			gl.PointSize(3);
 			gl.Begin(OpenGL.GL_POINTS);
 			gl.Color(0.0f, 1.0f, 0.0f);
 			gl.Vertex(points[points.Count - 1].Point.X * _coef, points[points.Count - 1].Point.Y * _coef, points[points.Count - 1].Point.Z * _coef);
 			gl.End();
 		}
 
-		private void DrawSquare(List<GlobalPoint> points)
+		private void DrawSquare(List<GlobalPoint> points, bool isUnderPresure)
 		{
 			OpenGL gl = openGLControl.OpenGL;
 			for (int i = 0; i < points.Count; i++)
@@ -314,16 +292,44 @@ namespace FEView
 				{
 					nextPoint = points[i + 1];
 				}
-				gl.PointSize(5);
+				if (isUnderPresure)
+				{
+					gl.PointSize(5);
+				}
+				else
+				{
+					gl.PointSize(3);
+				}
 				gl.Begin(OpenGL.GL_POINTS);
-				gl.Color(0.0f, 1.0f, 0.0f);
+				if (isUnderPresure)
+				{
+					gl.Color(0.0f, 0.0f, 1.0f);
+				}
+				else
+				{
+					gl.Color(0.0f, 1.0f, 0.0f);
+				}
 				gl.Vertex(curPoint.Point.X * _coef, curPoint.Point.Y * _coef, curPoint.Point.Z * _coef);
 				gl.End();
 
 				gl.Begin(OpenGL.GL_LINES);
-				gl.Color(1.0f, 0.0f, 0.0f);
+				if (isUnderPresure)
+				{
+					gl.Color(0.0f, 0.0f, 1.0f);
+				}
+				else
+				{
+					gl.Color(1.0f, 0.0f, 0.0f);
+				}
 				gl.Vertex(curPoint.Point.X * _coef, curPoint.Point.Y * _coef, curPoint.Point.Z * _coef);
-				gl.Color(1.0f, 0.0f, 0.0f);
+				if (isUnderPresure)
+				{
+					gl.Color(0.0f, 0.0f, 1.0f);
+				}
+				else
+				{
+					gl.Color(1.0f, 0.0f, 0.0f);
+				}
 				gl.Vertex(nextPoint.Point.X * _coef, nextPoint.Point.Y * _coef, nextPoint.Point.Z * _coef);
 				gl.End();
 			}
@@ -337,8 +343,8 @@ namespace FEView
 			{
 				int startnumber = l * 3;
 				_container.GlobalPoints[l].Point.X += _result[startnumber];
-				_container.GlobalPoints[l].Point.Y += _result[startnumber+1];
-				_container.GlobalPoints[l].Point.Z += _result[startnumber+2];
+				_container.GlobalPoints[l].Point.Y += _result[startnumber + 1];
+				_container.GlobalPoints[l].Point.Z += _result[startnumber + 2];
 			}
 			_lock = false;
 		}
