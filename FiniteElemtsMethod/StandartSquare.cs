@@ -14,8 +14,9 @@ namespace FiniteElemtsMethod
 		public static double[] C = {5.0 / 9.0, 8.0 / 9.0, 5.0 / 9.0};
 		private readonly double[] FE = new double[60];
 		public readonly Dictionary<int, List<int>> Dictionary = new Dictionary<int, List<int>>();
-		public int presureSurfaceNumber = 5;
+		public int presureSurfaceNumber { get; set; }
 		public bool isUnderPresure;
+		public double Pn { get; set; }
 
 		public bool IsUnderPresure
 		{
@@ -48,7 +49,7 @@ namespace FiniteElemtsMethod
 
 		private void InitFe()
 		{
-			List<Fi> list = new List<Fi> {new Fi(DXYZET, Fi, 1, 2, isUnderPresure), new Fi(DXYZET, Fi, 2, 0, isUnderPresure), new Fi(DXYZET, Fi, 0, 1, isUnderPresure)};
+			List<Fi> list = new List<Fi> { new Fi(DXYZET, Fi, 1, 2, isUnderPresure, Pn), new Fi(DXYZET, Fi, 2, 0, isUnderPresure, Pn), new Fi(DXYZET, Fi, 0, 1, isUnderPresure, Pn) };
 			List<int> ints = Dictionary[presureSurfaceNumber];
 			int levelCounter = 20;
 			for (int i = 0; i < 3; i++)

@@ -8,19 +8,19 @@ namespace PointsContainer
 	{
 		public readonly List<int> LocalGlobalOrderMapping = new List<int> {0, 8, 1, 11, 9, 3, 10, 2, 12, 13, 15, 14, 4, 16, 5, 19, 17, 7, 18, 6};
 		//Size
-		private readonly double _totalHeight = 10;
-		private readonly double _totalWidth = 5;
-		private readonly double _totalDepth = 10;
+		private double _totalHeight = 10;
+		private double _totalWidth = 10;
+		private double _totalDepth = 30;
 
 		//Number of elements per side
-		private readonly int _feNumberPerH = 4;
-		private readonly int _feNumberPerW = 4;
-		private readonly int _feNumberPerD = 4;
+		private int _feNumberPerH = 3;
+		private int _feNumberPerW = 2;
+		private int _feNumberPerD = 3;
 
 		//Number of levels per side
-		private readonly int _levelNumberPerH;
-		private readonly int _levelNumberPerW;
-		private readonly int _levelNumberPerD;
+		private int _levelNumberPerH;
+		private int _levelNumberPerW;
+		private int _levelNumberPerD;
 
 		//Total number of points
 		private int _totalPointsNumber;
@@ -29,7 +29,7 @@ namespace PointsContainer
 		private readonly Dictionary<int, List<int>> _globalPointsFe = new Dictionary<int, List<int>>();
 		private int[,] _localGlobalMapping;
 
-		public PContainer()
+		public void Init()
 		{
 			InitDimensionLevelNumber(out _levelNumberPerH, _feNumberPerH);
 			InitDimensionLevelNumber(out _levelNumberPerW, _feNumberPerW);
@@ -43,35 +43,42 @@ namespace PointsContainer
 		public double TotalHeight
 		{
 			get { return _totalHeight; }
+			set { _totalHeight = value; }
 		}
 
 		public double TotalWidth
 		{
 			get { return _totalWidth; }
+			set { _totalWidth = value; }
 		}
 
 		public double TotalDepth
 		{
 			get { return _totalDepth; }
+			set { _totalDepth = value; }
 		}
 
-		public int NumberOfLastFEUnderPresure {
+		public int NumberOfLastFEUnderPresure
+		{
 			get { return _feNumberPerH * _feNumberPerW; }
 		}
 
 		public int FeNumberPerH
 		{
 			get { return _feNumberPerH; }
+			set { _feNumberPerH = value; }
 		}
 
 		public int FeNumberPerW
 		{
 			get { return _feNumberPerW; }
+			set { _feNumberPerW = value; }
 		}
 
 		public int FeNumberPerD
 		{
 			get { return _feNumberPerD; }
+			set { _feNumberPerD = value; }
 		}
 
 		public int[,] LocalGlobalMapping

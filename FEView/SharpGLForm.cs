@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using System.Windows.Forms;
 using Accord.Math;
 using FiniteElemtsMethod;
@@ -10,9 +8,6 @@ using SharpGL;
 
 namespace FEView
 {
-	/// <summary>
-	///     The main form class.
-	/// </summary>
 	public partial class SharpGLForm : Form
 	{
 		private readonly List<int> _localPointNumberingSquare = new List<int>() {0, 8, 1, 9, 2, 10, 3, 11, 4, 16, 5, 17, 6, 18, 7, 19};
@@ -20,46 +15,33 @@ namespace FEView
 		private PContainer _container;
 		private double _coef;
 		private double[] _result;
+		private double _angleX;
+		private double _angleY;
+		private int _scale;
+		private readonly List<GlobalPoint> _pointsToDraw = new List<GlobalPoint>();
 
-		/// <summary>
-		private float _rotation = 0;
-
-		private bool _lock = false;
-
-		/// Initializes a new instance of the
-		/// <see cref="SharpGLForm" />
-		/// class.
-		/// </summary>
 		public SharpGLForm()
 		{
 			InitializeComponent();
 		}
 
-		/// <summary>
-		///     Handles the OpenGLDraw event of the openGLControl control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="RenderEventArgs" /> instance containing the event data.</param>
 		private void OpenGlControlOpenGlDraw(object sender, RenderEventArgs e)
 		{
-			if (_lock)
-			{
-				return;
-			}
-			//  Get the OpenGL object.
 			OpenGL gl = openGLControl.OpenGL;
-
-			//  Clear the color and depth buffer.
 			gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
-
-			//  Load the identity matrix.
 			gl.LoadIdentity();
-
-			openGLControl.OpenGL.Rotate(_rotation, 0.0f, 1.0f, 0.0f);
+			//openGLControl.OpenGL.Rotate(_rotation, 0.0f, 1.0f, 0.0f);
+			gl.Translate(-_scale, -_scale, -_scale);
+			if (_angleX == 360.0 || _angleX == -360.0)
+			{
+				_angleX = 0;
+			}
+			gl.Rotate(_angleY, 1.0, 0.0, 0.0);
+			gl.Rotate(_angleX, 0.0, 1.0, 0.0);
 			gl.PointSize(8);
 			gl.Begin(OpenGL.GL_POINTS);
-			gl.Color(0.5,0.5,0.5);
-			gl.Vertex(0,0,0);
+			gl.Color(0.5, 0.5, 0.5);
+			gl.Vertex(0, 0, 0);
 			gl.End();
 			for (int i = 0; i < _container.FiniteElements.Count; i++)
 			{
@@ -74,62 +56,33 @@ namespace FEView
 			}
 		}
 
+		private void OpenGlControlMouseWheel(object sender, MouseEventArgs e)
+		{
+			if (e.Delta.Equals(120))
+			{
+				_scale -= 1;
+			}
+			else
+			{
+				_scale += 1;
+			}
+			openGLControl.Invalidate();
+		}
+
 		private void OpenGlControlOpenGlInitialized(object sender, EventArgs e)
 		{
-			//  TODO: Initialise OpenGL here.
-
-			//  Get the OpenGL object.
 			OpenGL gl = openGLControl.OpenGL;
-
-			//  Set the clear color.
 			gl.ClearColor(0, 0, 0, 0);
 		}
 
-		/// <summary>
-		///     Handles the Resized event of the openGLControl control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.EventArgs" /> instance containing the event data.</param>
-		private void openGLControl_Resized(object sender, EventArgs e)
+		private void OpenGlControlResized(object sender, EventArgs e)
 		{
-			//  TODO: Set the projection matrix here.
-
-			//  Get the OpenGL object.
 			OpenGL gl = openGLControl.OpenGL;
-
-			////	//  Set the projection matrix.
 			gl.MatrixMode(OpenGL.GL_PROJECTION);
-
-			//	//  Load the identity.
 			gl.LoadIdentity();
-
-			//	//  Create a perspective transformation.
-			gl.Perspective(20.0f, (double) Width / (double) Height, 0.01, 100.0);
-
-			//	//  Use the 'look at' helper function to position and aim the camera.
-			gl.LookAt(5, 3, 5, 0, 0, 0, 0, 1, 0);
-
-			//	//  Set the modelview matrix.
+			gl.Perspective(20.0f, Width / (double) Height, 0.01, 500.0);
+			gl.LookAt(3, 3, 3, 0, 0, 0, 0, 1, 0);
 			gl.MatrixMode(OpenGL.GL_MODELVIEW);
-		}
-
-		private void OpenGlControlKeyPress(object sender, KeyPressEventArgs e)
-		{
-			EMove moveMode = (EMove) e.KeyChar;
-			switch (moveMode)
-			{
-				case EMove.Up:
-
-				case EMove.Right:
-				case EMove.Left:
-				case EMove.Down:
-				case EMove.Plus:
-					_rotation += 3.0f;
-					break;
-				case EMove.Minus:
-					_rotation -= 3.0f;
-					break;
-			}
 		}
 
 		private void Calculate()
@@ -137,6 +90,12 @@ namespace FEView
 			int[,] localGlobalMapping = _container.LocalGlobalMapping;
 			List<StandartCube> lCubes = new List<StandartCube>();
 			List<StandartSquare> lSquares = new List<StandartSquare>();
+			SideWrapper sideWrapper = _comboObjectSide.SelectedItem as SideWrapper;
+			int feSide = int.Parse((string) _comboFESide.SelectedItem) - 1;
+			if (sideWrapper == null)
+			{
+				throw new Exception();
+			}
 			for (int i = 0; i < localGlobalMapping.GetLength(0); i++)
 			{
 				List<GlobalPoint> list = new List<GlobalPoint>();
@@ -151,7 +110,9 @@ namespace FEView
 				StandartSquare standartSquare = new StandartSquare();
 				standartSquare.GlobalPoints = list;
 				standartSquare.Element = _container.FiniteElements[i];
-				standartSquare.IsUnderPresure = (i >= (localGlobalMapping.GetLength(0) - 1 - _container.NumberOfLastFEUnderPresure) && i <= localGlobalMapping.GetLength(0) - 1);
+				standartSquare.IsUnderPresure = sideWrapper.IsFeUnderPresure(_container.FiniteElements[i]);
+				standartSquare.presureSurfaceNumber = feSide;
+				standartSquare.Pn = GetPresure();
 				standartSquare.Init();
 				lCubes.Add(standartCube);
 				lSquares.Add(standartSquare);
@@ -184,36 +145,117 @@ namespace FEView
 					f[globalNumberRow] += fe[j];
 				}
 			}
-			StreamWriter lStreamWriter = new StreamWriter("E:\\Programming\\CourseWork\\trunk\\CourseWork\\bin\\Debug\\mg.txt");
-			for (int i = 0; i < mg.GetLength(0); i++)
-			{
-				StringBuilder builder = new StringBuilder();
-				for (int j = 0; j < mg.GetLength(1); j++)
-				{
-					builder.Append("	" + String.Format("{0:0.00}", mg[i, j]));
-				}
-				lStreamWriter.WriteLine(builder.ToString());
-			}
-			double determinant = mg.Determinant();
+			//StreamWriter lStreamWriter = new StreamWriter("E:\\Programming\\CourseWork\\trunk\\CourseWork\\bin\\Debug\\mg.txt");
+			//for (int i = 0; i < mg.GetLength(0); i++)
+			//{
+			//	StringBuilder builder = new StringBuilder();
+			//	for (int j = 0; j < mg.GetLength(1); j++)
+			//	{
+			//		builder.Append("	" + String.Format("{0:0.00}", mg[i, j]));
+			//	}
+			//	lStreamWriter.WriteLine(builder.ToString());
+			//}
+			//double determinant = mg.Determinant();
 			_result = mg.Solve(f);
 		}
 
-		private enum EMove
+		private double GetPresure()
 		{
-			Up = 56,
-			Right = 54,
-			Left = 52,
-			Down = 50,
-			Plus = 43,
-			Minus = 45
+			SideWrapper sideWrapper = _comboObjectSide.SelectedItem as SideWrapper;
+			int feSide = int.Parse((string)_comboFESide.SelectedItem);
+			return (sideWrapper.Number == 5 && (feSide == 6 || feSide == 6)) ? -6e+9 : -3e+9;
 		}
 
-		private void SharpGLForm_Load(object sender, EventArgs e)
+		private void SharpGlFormLoad(object sender, EventArgs e)
 		{
 			_container = new PContainer();
+			_container.Init();
 			double max = Math.Max(_container.TotalDepth, _container.TotalHeight);
 			max = Math.Max(max, _container.TotalWidth);
 			_coef = 1 / max;
+			ReInitComboSide();
+			InitValues();
+			ReInitPointsToDraw();
+			_comboObjectSide.SelectedIndex = 0;
+			_comboFESide.SelectedIndex = 0;
+			openGLControl.MouseWheel += OpenGlControlMouseWheel;
+		}
+
+		private void SubscribeEvents()
+		{
+			_comboFESide.SelectedValueChanged += NumerHightValueChanged;
+			_comboObjectSide.SelectedValueChanged += NumerHightValueChanged;
+			_numerHight.ValueChanged += NumerHightValueChanged;
+			_numericWidth.ValueChanged += NumerHightValueChanged;
+			_numericDepth.ValueChanged += NumerHightValueChanged;
+			_numericFENumberPerH.ValueChanged += NumerHightValueChanged;
+			_numericFENumberPerW.ValueChanged += NumerHightValueChanged;
+			_numericFENumberPerD.ValueChanged += NumerHightValueChanged;
+		}
+
+		private void DesubscribeEvents()
+		{
+			_comboFESide.SelectedValueChanged -= NumerHightValueChanged;
+			_comboObjectSide.SelectedValueChanged -= NumerHightValueChanged;
+			_numerHight.ValueChanged -= NumerHightValueChanged;
+			_numericWidth.ValueChanged -= NumerHightValueChanged;
+			_numericDepth.ValueChanged -= NumerHightValueChanged;
+			_numericFENumberPerH.ValueChanged -= NumerHightValueChanged;
+			_numericFENumberPerW.ValueChanged -= NumerHightValueChanged;
+			_numericFENumberPerD.ValueChanged -= NumerHightValueChanged;
+		}
+
+		private void InitValues()
+		{
+			DesubscribeEvents();
+			_numerHight.Value = (int) _container.TotalHeight;
+			_numericWidth.Value = (int) _container.TotalWidth;
+			_numericDepth.Value = (int) _container.TotalDepth;
+			_numericFENumberPerH.Value = _container.FeNumberPerH;
+			_numericFENumberPerW.Value = _container.FeNumberPerW;
+			_numericFENumberPerD.Value = _container.FeNumberPerD;
+			SubscribeEvents();
+		}
+
+		private void ReInitContainer()
+		{
+			DesubscribeEvents();
+			_container = new PContainer();
+			_container.TotalHeight = (double) _numerHight.Value;
+			_container.TotalWidth = (double) _numericWidth.Value;
+			_container.TotalDepth = (double) _numericDepth.Value;
+			_container.FeNumberPerH = (int) _numericFENumberPerH.Value;
+			_container.FeNumberPerW = (int) _numericFENumberPerW.Value;
+			_container.FeNumberPerD = (int) _numericFENumberPerD.Value;
+			_container.Init();
+			double max = Math.Max(_container.TotalDepth, _container.TotalHeight);
+			max = Math.Max(max, _container.TotalWidth);
+			_coef = 1 / max;
+			ReInitPointsToDraw();
+			ReInitComboSide();
+			SubscribeEvents();
+		}
+
+		private void ReInitPointsToDraw()
+		{
+			_pointsToDraw.Clear();
+			for (int l = 0; l < _container.GlobalPoints.Count; l++)
+			{
+				GlobalPoint globalPoint = _container.GlobalPoints[l].Clone();
+				_pointsToDraw.Add(globalPoint);
+			}
+		}
+
+		private void ReInitComboSide()
+		{
+			int selectedIndex = _comboObjectSide.SelectedIndex;
+			_comboObjectSide.Items.Clear();
+			_comboObjectSide.Items.Add(new SideWrapper(_container.FeNumberPerH, _container.FeNumberPerW, _container.FeNumberPerD, ESide.SideDh, true, 1));
+			_comboObjectSide.Items.Add(new SideWrapper(_container.FeNumberPerH, _container.FeNumberPerW, _container.FeNumberPerD, ESide.SideDw, false, 2));
+			_comboObjectSide.Items.Add(new SideWrapper(_container.FeNumberPerH, _container.FeNumberPerW, _container.FeNumberPerD, ESide.SideDh, false, 3));
+			_comboObjectSide.Items.Add(new SideWrapper(_container.FeNumberPerH, _container.FeNumberPerW, _container.FeNumberPerD, ESide.SideDw, true, 4));
+			_comboObjectSide.Items.Add(new SideWrapper(_container.FeNumberPerH, _container.FeNumberPerW, _container.FeNumberPerD, ESide.SideHw, false, 5));
+			_comboObjectSide.SelectedIndex = selectedIndex;
 		}
 
 		private void DrawFe(int feNumber, bool isUnderPresure)
@@ -223,7 +265,7 @@ namespace FEView
 			for (int i = 0; i < _localPointNumberingVertical.Count; i++)
 			{
 				int globalPointNumber = _container.LocalGlobalMapping[feNumber, _localPointNumberingVertical[i]];
-				pointsToDraw.Add(_container.GlobalPoints[globalPointNumber]);
+				pointsToDraw.Add(_pointsToDraw[globalPointNumber]);
 				if (counter == 2)
 				{
 					DrawVerticalLines(pointsToDraw);
@@ -239,14 +281,14 @@ namespace FEView
 			for (int i = 0; i < 8; i++)
 			{
 				int globalPointNumber = _container.LocalGlobalMapping[feNumber, _localPointNumberingSquare[i]];
-				pointsToDraw.Add(_container.GlobalPoints[globalPointNumber]);
+				pointsToDraw.Add(_pointsToDraw[globalPointNumber]);
 			}
 			DrawSquare(pointsToDraw, isUnderPresure);
 			pointsToDraw.Clear();
 			for (int i = 8; i < 16; i++)
 			{
 				int globalPointNumber = _container.LocalGlobalMapping[feNumber, _localPointNumberingSquare[i]];
-				pointsToDraw.Add(_container.GlobalPoints[globalPointNumber]);
+				pointsToDraw.Add(_pointsToDraw[globalPointNumber]);
 			}
 			DrawSquare(pointsToDraw, false);
 		}
@@ -335,15 +377,27 @@ namespace FEView
 		private void BtnCalculateClick(object sender, EventArgs e)
 		{
 			Calculate();
-			_lock = true;
-			for (int l = 0; l < _container.GlobalPoints.Count; l++)
+			for (int l = 0; l < _pointsToDraw.Count; l++)
 			{
 				int startnumber = l * 3;
-				_container.GlobalPoints[l].Point.X += _result[startnumber];
-				_container.GlobalPoints[l].Point.Y += _result[startnumber + 1];
-				_container.GlobalPoints[l].Point.Z += _result[startnumber + 2];
+				_pointsToDraw[l].Point.X += _result[startnumber];
+				_pointsToDraw[l].Point.Y += _result[startnumber + 1];
+				_pointsToDraw[l].Point.Z += _result[startnumber + 2];
 			}
-			_lock = false;
+		}
+
+		private void OpenGlControlMouseMove(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Left)
+			{
+				_angleX = e.X;
+				_angleY = e.Y;
+			}
+		}
+
+		private void NumerHightValueChanged(object sender, EventArgs e)
+		{
+			ReInitContainer();
 		}
 	}
 }

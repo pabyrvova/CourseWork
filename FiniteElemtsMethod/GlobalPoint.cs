@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PointsContainer
+﻿namespace PointsContainer
 {
 	public class GlobalPoint
 	{
@@ -19,6 +13,11 @@ namespace PointsContainer
 			LevelHeightNumber = levelHeightNumber;
 			LevelWidthNumber = levelWidthNumber;
 			LevelDepthNumber = levelDepthNumber;
+		}
+
+		public GlobalPoint Clone()
+		{
+			return new GlobalPoint(new Point(Point.X, Point.Y, Point.Z), LevelHeightNumber, LevelWidthNumber, LevelDepthNumber);
 		}
 	}
 
